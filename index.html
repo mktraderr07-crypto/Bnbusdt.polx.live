@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>BNB USDT dApp</title>
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.min.js"></script>
+</head>
+<body style="font-family:Arial;padding:20px">
+
+<h2>BNB USDT dApp (Demo)</h2>
+
+<button onclick="connectWallet()">Connect Wallet</button>
+
+<p><b>Wallet:</b> <span id="addr">Not connected</span></p>
+<p><b>BNB Balance:</b> <span id="bnb">-</span></p>
+<p><b>USDT Balance:</b> <span id="usdt">-</span></p>
+
+<script>
+let provider, signer;
+
+const USDT_ADDRESS = "0x55d398326f99059fF775485246999027B3197955";
+const USDT_ABI = [
+  "function balanceOf(address) view returns (uint256)",
+  "function decimals() view returns (uint8)"
+];
+
+async function connectWallet() {
+  if (!window.ethereum) {
+    alert("Trust Wallet / MetaMask install karo");
+    return;
+  }
+
+  await ethereum.request({ method: "eth_requestAccounts" });
+  provider = new ethers.providers.Web3Provider(window.ethereum);
+  signer = provider.getSigner();
+
+  const address = await signer.getAddress();
+  document.getElementById("addr").innerText = address;
+
+  const bnbBal = await provider.getBalance(address);
+  document.getElementById("bnb").innerText =
+    ethers.utils.formatEther(bnbBal);
+
+  const usdt = new ethers.Contract(USDT_ADDRESS, USDT_ABI, provider);
+  const bal = await usdt.balanceOf(address);
+  const dec = await usdt.decimals();
+  document.getElementById("usdt").innerText =
+    (bal / 10 ** dec).toString();
+}
+</script>
+
+</body>
+</html>
