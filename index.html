@@ -1,53 +1,128 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>BNB USDT dApp</title>
-  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.min.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BNB USDT Payment Portal</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #0b0f1a;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    .card {
+      background: #12182b;
+      border-radius: 16px;
+      padding: 24px;
+      max-width: 420px;
+      width: 100%;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+      text-align: center;
+    }
+    h1 {
+      margin-top: 0;
+      font-size: 22px;
+      letter-spacing: 0.5px;
+    }
+    .badge {
+      display: inline-block;
+      background: #f0b90b;
+      color: #000;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      margin-bottom: 12px;
+      font-weight: bold;
+    }
+    .qr {
+      margin: 20px 0;
+    }
+    .qr img {
+      width: 220px;
+      height: 220px;
+      border-radius: 12px;
+      background: #fff;
+      padding: 8px;
+    }
+    .address {
+      background: #0b0f1a;
+      border-radius: 10px;
+      padding: 12px;
+      word-break: break-all;
+      font-size: 13px;
+      margin-top: 10px;
+      border: 1px solid #1f2a44;
+    }
+    .copy-btn {
+      margin-top: 10px;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 10px;
+      background: #1e90ff;
+      color: #fff;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .copy-btn:active {
+      transform: scale(0.98);
+    }
+    .note {
+      margin-top: 16px;
+      font-size: 12px;
+      color: #b8c1ec;
+      line-height: 1.5;
+    }
+    footer {
+      margin-top: 18px;
+      font-size: 11px;
+      color: #7a86b6;
+    }
+  </style>
 </head>
-<body style="font-family:Arial;padding:20px">
+<body>
 
-<h2>BNB USDT dApp (Demo)</h2>
+  <div class="card">
+    <div class="badge">BNB Smart Chain</div>
+    <h1>USDT (BEP20) Payment</h1>
 
-<button onclick="connectWallet()">Connect Wallet</button>
+    <div class="qr">
+      <img
+        src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=0x7fde519f108384c49f962b5cf7a7a767bd5b7589"
+        alt="USDT BEP20 QR"
+      />
+    </div>
 
-<p><b>Wallet:</b> <span id="addr">Not connected</span></p>
-<p><b>BNB Balance:</b> <span id="bnb">-</span></p>
-<p><b>USDT Balance:</b> <span id="usdt">-</span></p>
+    <div class="address" id="usdtAddress">
+      0x7fde519f108384c49f962b5cf7a7a767bd5b7589
+    </div>
 
-<script>
-let provider, signer;
+    <button class="copy-btn" onclick="copyAddress()">
+      Copy USDT Address
+    </button>
 
-const USDT_ADDRESS = "0x55d398326f99059fF775485246999027B3197955";
-const USDT_ABI = [
-  "function balanceOf(address) view returns (uint256)",
-  "function decimals() view returns (uint8)"
-];
+    <div class="note">
+      • Send only <b>USDT (BEP20)</b> on BNB Smart Chain<br/>
+      • Do not send other tokens or networks
+    </div>
 
-async function connectWallet() {
-  if (!window.ethereum) {
-    alert("Trust Wallet / MetaMask install karo");
-    return;
-  }
+    <footer>
+      © 2026 BNB USDT Payment Portal
+    </footer>
+  </div>
 
-  await ethereum.request({ method: "eth_requestAccounts" });
-  provider = new ethers.providers.Web3Provider(window.ethereum);
-  signer = provider.getSigner();
-
-  const address = await signer.getAddress();
-  document.getElementById("addr").innerText = address;
-
-  const bnbBal = await provider.getBalance(address);
-  document.getElementById("bnb").innerText =
-    ethers.utils.formatEther(bnbBal);
-
-  const usdt = new ethers.Contract(USDT_ADDRESS, USDT_ABI, provider);
-  const bal = await usdt.balanceOf(address);
-  const dec = await usdt.decimals();
-  document.getElementById("usdt").innerText =
-    (bal / 10 ** dec).toString();
-}
-</script>
+  <script>
+    function copyAddress() {
+      const text = document.getElementById("usdtAddress").innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        alert("USDT address copied");
+      });
+    }
+  </script>
 
 </body>
 </html>
